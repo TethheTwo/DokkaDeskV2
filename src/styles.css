@@ -1,0 +1,313 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-border-ui: var(--border-ui);
+  --color-input: var(--input);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.5rem;
+
+  --background: #f8f9fc;
+  --foreground: #191c1e;
+  --card: #ffffff;
+  --card-foreground: #191c1e;
+  --popover: #ffffff;
+  --popover-foreground: #191c1e;
+
+  --primary: #005da9;
+  --primary-foreground: #ffffff;
+
+  --secondary: #575f67;
+  --secondary-foreground: #ffffff;
+
+  --muted: #f2f3f6;
+  --muted-foreground: #64748b;
+
+  --accent: #f2f3f6;
+  --accent-foreground: #191c1e;
+
+  --destructive: #ba1a1a;
+  --destructive-foreground: #ffffff;
+
+  --on-surface-variant: #414752;
+  --border: #c1c7d4;
+  --border-ui: #e2e8f0;
+  --input: #d1d5db;
+  --ring: #90a1b9;
+
+  --chart-1: #005da9;
+  --chart-2: #006b2c;
+  --chart-3: #575f67;
+  --chart-4: #ea580c;
+  --chart-5: #005da9;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #191c1e;
+  --sidebar-primary: #005da9;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #edeef1;
+  --sidebar-accent-foreground: #141d23;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #90a1b9;
+
+  --app-bg: #f8f9fc;
+  --brand-blue: #005da9;
+  --brand-blue-hover: #2868b3;
+  --brand-teal: #009c9c;
+  --brand-accent: #93cc4b;
+  --btn-gray: #575f67;
+  --btn-gray-hover: #3f484f;
+}
+
+.dark {
+  --background: #191c1e;
+  --foreground: #f0f1f4;
+  --card: #2e3133;
+  --card-foreground: #f0f1f4;
+  --popover: #2e3133;
+  --popover-foreground: #f0f1f4;
+  --primary: #a5c8ff;
+  --primary-foreground: #001c3a;
+  --secondary: #dbe4ed;
+  --secondary-foreground: #141d23;
+  --muted: #3f484f;
+  --muted-foreground: #90a1b9;
+  --accent: #3f484f;
+  --accent-foreground: #f0f1f4;
+  --destructive: #ff6467;
+  --destructive-foreground: #191c1e;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #6a7282;
+  --chart-1: #a5c8ff;
+  --chart-2: #7ffc97;
+  --chart-3: #dbe4ed;
+  --chart-4: #ffb900;
+  --chart-5: #ad46ff;
+  --sidebar: #2e3133;
+  --sidebar-foreground: #f0f1f4;
+  --sidebar-primary: #a5c8ff;
+  --sidebar-primary-foreground: #001c3a;
+  --sidebar-accent: #3f484f;
+  --sidebar-accent-foreground: #f0f1f4;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #6a7282;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--color-foreground);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  .form-input {
+    width: 100%;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid #d1d5db;
+    background-color: #f2f3f6;
+    padding: 0 0.75rem;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+    color: #191c1e;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .form-input::placeholder {
+    color: #64748b;
+  }
+
+  .form-input:focus {
+    border-color: #005da9;
+    box-shadow: 0 0 0 3px rgba(0, 93, 169, 0.1);
+  }
+
+  textarea.form-input {
+    height: auto;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+@utility text-display-lg {
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+@utility text-headline-md {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+@utility text-headline-sm {
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 600;
+}
+@utility text-body-lg {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+}
+@utility text-body-bold {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+}
+@utility text-body-base {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+}
+@utility text-body-medium {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+}
+@utility text-label-sm {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+}
+@utility text-label-caps {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+@utility surface-card {
+  background-color: #ffffff;
+  border: 1px solid #c1c7d4;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  a[href],
+  summary,
+  label[for],
+  select:not(:disabled),
+  [role="menuitem"],
+  [role="option"],
+  [role="tab"],
+  [role="switch"],
+  [role="checkbox"],
+  [role="radio"] {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+}
+
+/* Calendar / Date picker styling */
+[data-selected-single="true"],
+[data-range-start="true"],
+[data-range-end="true"] {
+  background-color: #005da9 !important;
+  color: #ffffff !important;
+}
+
+[data-range-middle="true"] {
+  background-color: rgba(0, 93, 169, 0.1) !important;
+  color: #191c1e !important;
+}
+
+button.rdp-button:hover,
+.rdp-day button:hover {
+  background-color: #f2f3f6 !important;
+}
+
+[data-range-start="true"] {
+  border-radius: 9999px 0 0 9999px !important;
+}
+
+[data-range-end="true"] {
+  border-radius: 0 9999px 9999px 0 !important;
+}
+
+.rdp-weekday {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  color: #414752 !important;
+}
+
+.rdp-month_caption {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #191c1e !important;
+}
+
+.rdp-day_today {
+  color: #005da9 !important;
+  font-weight: 700 !important;
+}
+
+.rdp-day_outside {
+  color: #64748b !important;
+  opacity: 0.5 !important;
+}
