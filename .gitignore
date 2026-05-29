@@ -54,3 +54,9 @@ __pycache__/
 openspec/
 graphify-out/
 scripts/start-ecosystem.sh
+
+# Dev-only (no subir a producción)
+.prettierrc
+.prettierignore
+eslint.config.js
+bunfig.toml
