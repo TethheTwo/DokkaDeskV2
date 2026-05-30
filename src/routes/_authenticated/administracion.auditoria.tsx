@@ -8,7 +8,7 @@ import { exportAuditXLSX, type AuditRow as AuditRowExport } from "@/lib/report-e
 import { formatCode } from "@/lib/utils";
 import { getPaginationItems } from "@/lib/pagination";
 
-export const Route = createFileRoute("/_authenticated/reportes/auditoria")({
+export const Route = createFileRoute("/_authenticated/administracion/auditoria")({
   head: () => ({
     meta: [
       { title: "Auditoría — DOKKA Desk" },

@@ -39,7 +39,7 @@ export function AppTopBar() {
       case "tickets": return pathname.startsWith("/tickets");
       case "asistencias": return pathname.startsWith("/asistencias");
       case "reporte": return pathname.startsWith("/reportes");
-      case "admin": return pathname.startsWith("/administracion") || pathname.startsWith("/reportes/dashboard") || pathname.startsWith("/reportes/auditoria");
+      case "admin": return pathname.startsWith("/administracion");
       default: return false;
     }
   };
@@ -87,12 +87,12 @@ export function AppTopBar() {
                       </Link>
                     )}
                     {can("view_dashboard") && (
-                      <Link to="/reportes/dashboard" className="block px-4 py-2 text-label-sm text-[#414752] hover:bg-[#f2f3f6] hover:text-[#005da9] transition-colors">
+                      <Link to="/administracion/dashboard" className="block px-4 py-2 text-label-sm text-[#414752] hover:bg-[#f2f3f6] hover:text-[#005da9] transition-colors">
                         Dashboard
                       </Link>
                     )}
                     {can("view_auditoria") && (
-                      <Link to="/reportes/auditoria" className="block px-4 py-2 text-label-sm text-[#414752] hover:bg-[#f2f3f6] hover:text-[#005da9] transition-colors">
+                      <Link to="/administracion/auditoria" className="block px-4 py-2 text-label-sm text-[#414752] hover:bg-[#f2f3f6] hover:text-[#005da9] transition-colors">
                         Auditoría
                       </Link>
                     )}
@@ -159,21 +159,6 @@ export function AppTopBar() {
         </div>
 
         <div className="flex items-center gap-4">
-          <Link
-            to="/tickets/listado"
-            className="hidden lg:flex relative items-center"
-          >
-            <span className="material-symbols-outlined absolute left-3 text-[#414752]" style={{ fontSize: "20px" }}>search</span>
-            <input
-              className="pl-10 pr-4 h-9 w-64 bg-[#f2f3f6] border border-[#c1c7d4] rounded-md focus:ring-2 focus:ring-[#005da9]/40 focus:border-[#005da9] outline-none text-body-base cursor-pointer"
-              placeholder="Buscar ticket..."
-              readOnly
-              onClick={(e) => {
-                e.preventDefault();
-                window.location.href = "/tickets/listado";
-              }}
-            />
-          </Link>
           <button className="material-symbols-outlined text-[#575f67] hover:bg-[#f2f3f6] p-2 rounded-full transition-colors" style={{ fontSize: "24px" }}>
             notifications
           </button>

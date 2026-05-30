@@ -48,6 +48,15 @@ function ListasPage() {
   const isAdmin = roles.includes("administrador");
   const [active, setActive] = useState<ListKey>("ejecutivos");
   const items = useMasterList(active);
+  const [search, setSearch] = useState("");
+  const filtered = items.filter((it) => {
+    const q = search.toLowerCase();
+    return (
+      it.label.toLowerCase().includes(q) ||
+      ((it.value as any)?.phone ?? "").toLowerCase().includes(q) ||
+      ((it.value as any)?.department ?? "").toLowerCase().includes(q)
+    );
+  });
   const tab = TABS.find((t) => t.key === active)!;
 
   const [editing, setEditing] = useState<ListItem | null>(null);
@@ -96,9 +105,9 @@ function ListasPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--app-bg)] text-foreground flex flex-col">
+    <div className="h-screen overflow-hidden bg-[var(--app-bg)] text-foreground flex flex-col">
       <AppTopBar />
-      <main className="flex-1 w-full max-w-7xl mx-auto px-6 py-8">
+      <main className="flex-1 overflow-hidden flex flex-col max-w-7xl mx-auto px-6 py-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
           <div>
             <h1 className="text-headline-md text-[#191c1e]">Listas Maestras</h1>
@@ -116,10 +125,10 @@ function ListasPage() {
         </div>
 
         {!isAdmin && (
-          <p className="mb-4 text-sm text-muted-foreground">Solo administradores pueden editar las listas.</p>
+          <p className="shrink-0 text-sm text-muted-foreground">Solo administradores pueden editar las listas.</p>
         )}
 
-        <div className="bg-white rounded-xl shadow-sm border border-[#e2e8f0] overflow-hidden mb-6">
+        <div className="bg-white rounded-xl shadow-sm border border-[#e2e8f0] overflow-hidden flex flex-col max-h-[calc(100vh-220px)]">
           <div className="flex border-b border-[#e2e8f0] overflow-x-auto bg-[#f2f3f6]">
             {TABS.map((t) => (
               <button
@@ -143,19 +152,19 @@ function ListasPage() {
               <input
                 className="w-full pl-10 pr-4 h-10 border border-[#d1d5db] rounded-md text-body-base bg-[#f8f9fc] focus:ring-2 focus:ring-[#005da9]/40 focus:border-[#005da9] outline-none transition-all"
                 placeholder={`Buscar ${tab.label.toLowerCase()}...`}
-                value=""
-                onChange={() => {}}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
               />
             </div>
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-label-sm text-[#575f67]">{items.length} registros</span>
+              <span className="text-label-sm text-[#575f67]">{filtered.length} de {items.length} registros</span>
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto overflow-y-auto flex-1 scrollbar-hide">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-[#f2f3f6] border-b border-[#e2e8f0]">
+                <tr className="sticky top-0 z-10 bg-[#f2f3f6] border-b border-[#e2e8f0]">
                   {tab.withDept && <th className="px-6 py-3 text-label-caps text-[#575f67]">Departamento</th>}
                   <th className="px-6 py-3 text-label-caps text-[#575f67]">{nameLabel}</th>
                   {tab.withPhone && <th className="px-6 py-3 text-label-caps text-[#575f67]">Celular</th>}
@@ -163,12 +172,12 @@ function ListasPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#e2e8f0]">
-                {items.length === 0 ? (
+                {filtered.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">Sin elementos.</td>
                   </tr>
                 ) : (
-                  items.map((it) => (
+                  filtered.map((it) => (
                     <tr key={it.id} className="hover:bg-[#f2f3f6]/50 transition-colors group">
                       {tab.withDept && (
                         <td className="px-6 py-4 text-body-base text-[#575f67]">{(it.value as any)?.department ?? "—"}</td>
@@ -213,8 +222,8 @@ function ListasPage() {
             </table>
           </div>
 
-          <div className="px-6 py-4 border-t border-[#e2e8f0] flex items-center justify-between bg-white">
-            <span className="text-label-sm text-[#575f67]">Mostrando {items.length} registros</span>
+          <div className="shrink-0 px-6 py-4 border-t border-[#e2e8f0] flex items-center justify-between bg-white">
+            <span className="text-label-sm text-[#575f67]">{filtered.length} de {items.length} registros</span>
           </div>
         </div>
       </main>

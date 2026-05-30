@@ -84,7 +84,7 @@ function RolesPage() {
           {isAdmin && (
             <div className="flex gap-3">
               <Link
-                to="/reportes/auditoria"
+                to="/administracion/auditoria"
                 className="h-10 px-4 rounded-md border border-[#d1d5db] bg-white text-[#575f67] font-body-bold hover:bg-[#edeef1] transition-colors flex items-center gap-2"
               >
                 <span className="material-symbols-outlined text-[20px]">history</span>

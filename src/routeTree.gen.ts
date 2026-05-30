@@ -15,9 +15,7 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedConfiguracionRouteImport } from './routes/_authenticated/configuracion'
 import { Route as AuthenticatedTicketsRegistrarRouteImport } from './routes/_authenticated/tickets.registrar'
 import { Route as AuthenticatedTicketsListadoRouteImport } from './routes/_authenticated/tickets.listado'
-import { Route as AuthenticatedReportesDashboardRouteImport } from './routes/_authenticated/reportes.dashboard'
 import { Route as AuthenticatedReportesCasosGeneralesRouteImport } from './routes/_authenticated/reportes.casos-generales'
-import { Route as AuthenticatedReportesAuditoriaRouteImport } from './routes/_authenticated/reportes.auditoria'
 import { Route as AuthenticatedReportesAccidentesPersonalesRouteImport } from './routes/_authenticated/reportes.accidentes-personales'
 import { Route as AuthenticatedAsistenciasMascotasRouteImport } from './routes/_authenticated/asistencias.mascotas'
 import { Route as AuthenticatedAsistenciasHogarRouteImport } from './routes/_authenticated/asistencias.hogar'
@@ -27,6 +25,8 @@ import { Route as AuthenticatedAsistenciasAutomotorRouteImport } from './routes/
 import { Route as AuthenticatedAdministracionUsuariosRouteImport } from './routes/_authenticated/administracion.usuarios'
 import { Route as AuthenticatedAdministracionRolesRouteImport } from './routes/_authenticated/administracion.roles'
 import { Route as AuthenticatedAdministracionListasRouteImport } from './routes/_authenticated/administracion.listas'
+import { Route as AuthenticatedAdministracionDashboardRouteImport } from './routes/_authenticated/administracion.dashboard'
+import { Route as AuthenticatedAdministracionAuditoriaRouteImport } from './routes/_authenticated/administracion.auditoria'
 import { Route as PReporteCgIdRouteImport } from './routes/p.reporte.cg.$id'
 import { Route as PReporteApIdRouteImport } from './routes/p.reporte.ap.$id'
 import { Route as AuthenticatedReporteCgIdRouteImport } from './routes/_authenticated/reporte.cg.$id'
@@ -64,22 +64,10 @@ const AuthenticatedTicketsListadoRoute =
     path: '/tickets/listado',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedReportesDashboardRoute =
-  AuthenticatedReportesDashboardRouteImport.update({
-    id: '/reportes/dashboard',
-    path: '/reportes/dashboard',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
 const AuthenticatedReportesCasosGeneralesRoute =
   AuthenticatedReportesCasosGeneralesRouteImport.update({
     id: '/reportes/casos-generales',
     path: '/reportes/casos-generales',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedReportesAuditoriaRoute =
-  AuthenticatedReportesAuditoriaRouteImport.update({
-    id: '/reportes/auditoria',
-    path: '/reportes/auditoria',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedReportesAccidentesPersonalesRoute =
@@ -136,6 +124,18 @@ const AuthenticatedAdministracionListasRoute =
     path: '/administracion/listas',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAdministracionDashboardRoute =
+  AuthenticatedAdministracionDashboardRouteImport.update({
+    id: '/administracion/dashboard',
+    path: '/administracion/dashboard',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAdministracionAuditoriaRoute =
+  AuthenticatedAdministracionAuditoriaRouteImport.update({
+    id: '/administracion/auditoria',
+    path: '/administracion/auditoria',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const PReporteCgIdRoute = PReporteCgIdRouteImport.update({
   id: '/p/reporte/cg/$id',
   path: '/p/reporte/cg/$id',
@@ -163,6 +163,8 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
   '/configuracion': typeof AuthenticatedConfiguracionRoute
+  '/administracion/auditoria': typeof AuthenticatedAdministracionAuditoriaRoute
+  '/administracion/dashboard': typeof AuthenticatedAdministracionDashboardRoute
   '/administracion/listas': typeof AuthenticatedAdministracionListasRoute
   '/administracion/roles': typeof AuthenticatedAdministracionRolesRoute
   '/administracion/usuarios': typeof AuthenticatedAdministracionUsuariosRoute
@@ -172,9 +174,7 @@ export interface FileRoutesByFullPath {
   '/asistencias/hogar': typeof AuthenticatedAsistenciasHogarRoute
   '/asistencias/mascotas': typeof AuthenticatedAsistenciasMascotasRoute
   '/reportes/accidentes-personales': typeof AuthenticatedReportesAccidentesPersonalesRoute
-  '/reportes/auditoria': typeof AuthenticatedReportesAuditoriaRoute
   '/reportes/casos-generales': typeof AuthenticatedReportesCasosGeneralesRoute
-  '/reportes/dashboard': typeof AuthenticatedReportesDashboardRoute
   '/tickets/listado': typeof AuthenticatedTicketsListadoRoute
   '/tickets/registrar': typeof AuthenticatedTicketsRegistrarRoute
   '/reporte/ap/$id': typeof AuthenticatedReporteApIdRoute
@@ -186,6 +186,8 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/configuracion': typeof AuthenticatedConfiguracionRoute
   '/': typeof AuthenticatedIndexRoute
+  '/administracion/auditoria': typeof AuthenticatedAdministracionAuditoriaRoute
+  '/administracion/dashboard': typeof AuthenticatedAdministracionDashboardRoute
   '/administracion/listas': typeof AuthenticatedAdministracionListasRoute
   '/administracion/roles': typeof AuthenticatedAdministracionRolesRoute
   '/administracion/usuarios': typeof AuthenticatedAdministracionUsuariosRoute
@@ -195,9 +197,7 @@ export interface FileRoutesByTo {
   '/asistencias/hogar': typeof AuthenticatedAsistenciasHogarRoute
   '/asistencias/mascotas': typeof AuthenticatedAsistenciasMascotasRoute
   '/reportes/accidentes-personales': typeof AuthenticatedReportesAccidentesPersonalesRoute
-  '/reportes/auditoria': typeof AuthenticatedReportesAuditoriaRoute
   '/reportes/casos-generales': typeof AuthenticatedReportesCasosGeneralesRoute
-  '/reportes/dashboard': typeof AuthenticatedReportesDashboardRoute
   '/tickets/listado': typeof AuthenticatedTicketsListadoRoute
   '/tickets/registrar': typeof AuthenticatedTicketsRegistrarRoute
   '/reporte/ap/$id': typeof AuthenticatedReporteApIdRoute
@@ -211,6 +211,8 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_authenticated/configuracion': typeof AuthenticatedConfiguracionRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/administracion/auditoria': typeof AuthenticatedAdministracionAuditoriaRoute
+  '/_authenticated/administracion/dashboard': typeof AuthenticatedAdministracionDashboardRoute
   '/_authenticated/administracion/listas': typeof AuthenticatedAdministracionListasRoute
   '/_authenticated/administracion/roles': typeof AuthenticatedAdministracionRolesRoute
   '/_authenticated/administracion/usuarios': typeof AuthenticatedAdministracionUsuariosRoute
@@ -220,9 +222,7 @@ export interface FileRoutesById {
   '/_authenticated/asistencias/hogar': typeof AuthenticatedAsistenciasHogarRoute
   '/_authenticated/asistencias/mascotas': typeof AuthenticatedAsistenciasMascotasRoute
   '/_authenticated/reportes/accidentes-personales': typeof AuthenticatedReportesAccidentesPersonalesRoute
-  '/_authenticated/reportes/auditoria': typeof AuthenticatedReportesAuditoriaRoute
   '/_authenticated/reportes/casos-generales': typeof AuthenticatedReportesCasosGeneralesRoute
-  '/_authenticated/reportes/dashboard': typeof AuthenticatedReportesDashboardRoute
   '/_authenticated/tickets/listado': typeof AuthenticatedTicketsListadoRoute
   '/_authenticated/tickets/registrar': typeof AuthenticatedTicketsRegistrarRoute
   '/_authenticated/reporte/ap/$id': typeof AuthenticatedReporteApIdRoute
@@ -236,6 +236,8 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/configuracion'
+    | '/administracion/auditoria'
+    | '/administracion/dashboard'
     | '/administracion/listas'
     | '/administracion/roles'
     | '/administracion/usuarios'
@@ -245,9 +247,7 @@ export interface FileRouteTypes {
     | '/asistencias/hogar'
     | '/asistencias/mascotas'
     | '/reportes/accidentes-personales'
-    | '/reportes/auditoria'
     | '/reportes/casos-generales'
-    | '/reportes/dashboard'
     | '/tickets/listado'
     | '/tickets/registrar'
     | '/reporte/ap/$id'
@@ -259,6 +259,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/configuracion'
     | '/'
+    | '/administracion/auditoria'
+    | '/administracion/dashboard'
     | '/administracion/listas'
     | '/administracion/roles'
     | '/administracion/usuarios'
@@ -268,9 +270,7 @@ export interface FileRouteTypes {
     | '/asistencias/hogar'
     | '/asistencias/mascotas'
     | '/reportes/accidentes-personales'
-    | '/reportes/auditoria'
     | '/reportes/casos-generales'
-    | '/reportes/dashboard'
     | '/tickets/listado'
     | '/tickets/registrar'
     | '/reporte/ap/$id'
@@ -283,6 +283,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/_authenticated/configuracion'
     | '/_authenticated/'
+    | '/_authenticated/administracion/auditoria'
+    | '/_authenticated/administracion/dashboard'
     | '/_authenticated/administracion/listas'
     | '/_authenticated/administracion/roles'
     | '/_authenticated/administracion/usuarios'
@@ -292,9 +294,7 @@ export interface FileRouteTypes {
     | '/_authenticated/asistencias/hogar'
     | '/_authenticated/asistencias/mascotas'
     | '/_authenticated/reportes/accidentes-personales'
-    | '/_authenticated/reportes/auditoria'
     | '/_authenticated/reportes/casos-generales'
-    | '/_authenticated/reportes/dashboard'
     | '/_authenticated/tickets/listado'
     | '/_authenticated/tickets/registrar'
     | '/_authenticated/reporte/ap/$id'
@@ -354,25 +354,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTicketsListadoRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/reportes/dashboard': {
-      id: '/_authenticated/reportes/dashboard'
-      path: '/reportes/dashboard'
-      fullPath: '/reportes/dashboard'
-      preLoaderRoute: typeof AuthenticatedReportesDashboardRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/reportes/casos-generales': {
       id: '/_authenticated/reportes/casos-generales'
       path: '/reportes/casos-generales'
       fullPath: '/reportes/casos-generales'
       preLoaderRoute: typeof AuthenticatedReportesCasosGeneralesRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/reportes/auditoria': {
-      id: '/_authenticated/reportes/auditoria'
-      path: '/reportes/auditoria'
-      fullPath: '/reportes/auditoria'
-      preLoaderRoute: typeof AuthenticatedReportesAuditoriaRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/reportes/accidentes-personales': {
@@ -438,6 +424,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdministracionListasRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/administracion/dashboard': {
+      id: '/_authenticated/administracion/dashboard'
+      path: '/administracion/dashboard'
+      fullPath: '/administracion/dashboard'
+      preLoaderRoute: typeof AuthenticatedAdministracionDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/administracion/auditoria': {
+      id: '/_authenticated/administracion/auditoria'
+      path: '/administracion/auditoria'
+      fullPath: '/administracion/auditoria'
+      preLoaderRoute: typeof AuthenticatedAdministracionAuditoriaRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/p/reporte/cg/$id': {
       id: '/p/reporte/cg/$id'
       path: '/p/reporte/cg/$id'
@@ -472,6 +472,8 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteChildren {
   AuthenticatedConfiguracionRoute: typeof AuthenticatedConfiguracionRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedAdministracionAuditoriaRoute: typeof AuthenticatedAdministracionAuditoriaRoute
+  AuthenticatedAdministracionDashboardRoute: typeof AuthenticatedAdministracionDashboardRoute
   AuthenticatedAdministracionListasRoute: typeof AuthenticatedAdministracionListasRoute
   AuthenticatedAdministracionRolesRoute: typeof AuthenticatedAdministracionRolesRoute
   AuthenticatedAdministracionUsuariosRoute: typeof AuthenticatedAdministracionUsuariosRoute
@@ -481,9 +483,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAsistenciasHogarRoute: typeof AuthenticatedAsistenciasHogarRoute
   AuthenticatedAsistenciasMascotasRoute: typeof AuthenticatedAsistenciasMascotasRoute
   AuthenticatedReportesAccidentesPersonalesRoute: typeof AuthenticatedReportesAccidentesPersonalesRoute
-  AuthenticatedReportesAuditoriaRoute: typeof AuthenticatedReportesAuditoriaRoute
   AuthenticatedReportesCasosGeneralesRoute: typeof AuthenticatedReportesCasosGeneralesRoute
-  AuthenticatedReportesDashboardRoute: typeof AuthenticatedReportesDashboardRoute
   AuthenticatedTicketsListadoRoute: typeof AuthenticatedTicketsListadoRoute
   AuthenticatedTicketsRegistrarRoute: typeof AuthenticatedTicketsRegistrarRoute
   AuthenticatedReporteApIdRoute: typeof AuthenticatedReporteApIdRoute
@@ -493,6 +493,10 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedConfiguracionRoute: AuthenticatedConfiguracionRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedAdministracionAuditoriaRoute:
+    AuthenticatedAdministracionAuditoriaRoute,
+  AuthenticatedAdministracionDashboardRoute:
+    AuthenticatedAdministracionDashboardRoute,
   AuthenticatedAdministracionListasRoute:
     AuthenticatedAdministracionListasRoute,
   AuthenticatedAdministracionRolesRoute: AuthenticatedAdministracionRolesRoute,
@@ -506,10 +510,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAsistenciasMascotasRoute: AuthenticatedAsistenciasMascotasRoute,
   AuthenticatedReportesAccidentesPersonalesRoute:
     AuthenticatedReportesAccidentesPersonalesRoute,
-  AuthenticatedReportesAuditoriaRoute: AuthenticatedReportesAuditoriaRoute,
   AuthenticatedReportesCasosGeneralesRoute:
     AuthenticatedReportesCasosGeneralesRoute,
-  AuthenticatedReportesDashboardRoute: AuthenticatedReportesDashboardRoute,
   AuthenticatedTicketsListadoRoute: AuthenticatedTicketsListadoRoute,
   AuthenticatedTicketsRegistrarRoute: AuthenticatedTicketsRegistrarRoute,
   AuthenticatedReporteApIdRoute: AuthenticatedReporteApIdRoute,

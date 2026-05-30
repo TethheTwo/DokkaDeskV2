@@ -45,7 +45,7 @@ import { useCurrentUser } from "@/lib/user-store";
 import { usePermissions } from "@/lib/permissions";
 import { supabase } from "@/integrations/supabase/client";
 
-export const Route = createFileRoute("/_authenticated/reportes/dashboard")({
+export const Route = createFileRoute("/_authenticated/administracion/dashboard")({
   ssr: false,
   head: () => ({
     meta: [
