@@ -9,7 +9,6 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
-import "@fontsource/material-symbols-outlined/400.css";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -109,7 +108,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", type: "image/png", href: "/favicon.png" },
       { rel: "shortcut icon", type: "image/png", href: "/favicon.png" },
       { rel: "apple-touch-icon", href: "/favicon.png" },
-
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" },
     ],
   }),
 
