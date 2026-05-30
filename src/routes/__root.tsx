@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import "@fontsource/material-symbols-outlined/400.css";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
