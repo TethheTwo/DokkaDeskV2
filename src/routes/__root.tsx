@@ -96,11 +96,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       {
         property: "og:image",
-        content: "/social-preview.png",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4c879767-108f-4cf7-955b-0271f658496a/id-preview-fd75d22f--55d35547-bb11-47f9-9adb-5319676f89a8.lovable.app-1779305560073.png",
       },
       {
         name: "twitter:image",
-        content: "/social-preview.png",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4c879767-108f-4cf7-955b-0271f658496a/id-preview-fd75d22f--55d35547-bb11-47f9-9adb-5319676f89a8.lovable.app-1779305560073.png",
       },
     ],
     links: [
@@ -110,6 +112,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "apple-touch-icon", href: "/favicon.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" },
     ],
   }),
