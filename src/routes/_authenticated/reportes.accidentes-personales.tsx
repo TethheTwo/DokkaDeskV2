@@ -209,13 +209,20 @@ function APPage() {
             <h1 className="text-display-lg text-[#191c1e] tracking-tight">Reportes AP — Accidentes Personales</h1>
             <p className="text-[#414752] font-body-medium text-body-medium">Administración y seguimiento de Formulario F-775 de siniestros técnicos.</p>
           </div>
-          <button
-            onClick={() => { setOpen(true); setForm(empty); setErrors({}); }}
-            className="flex items-center gap-2 bg-[#005da9] hover:bg-[#2868b3] text-white px-6 h-11 rounded-md font-body-bold text-body-bold transition-all shadow-sm active:scale-95"
-          >
-            <span className="material-symbols-outlined" style={{fontSize:"20px"}}>add</span>
-            Nuevo registro
-          </button>
+          <div className="flex items-center gap-2">
+            <DownloadMenu
+              hidden={!canDownload}
+              onPDF={(r) => exportAPPDF(rows, r, profile?.full_name || (user?.email?.split("@")[0] ?? "Usuario"))}
+              onExcel={(r) => exportAPXLSX(rows, r)}
+            />
+            <button
+              onClick={() => { setOpen(true); setForm(empty); setErrors({}); }}
+              className="flex items-center gap-2 bg-[#005da9] hover:bg-[#2868b3] text-white px-6 h-11 rounded-md font-body-bold text-body-bold transition-all shadow-sm active:scale-95"
+            >
+              <span className="material-symbols-outlined" style={{fontSize:"20px"}}>add</span>
+              Nuevo registro
+            </button>
+          </div>
         </div>
 
         <div className="bg-white p-4 rounded-xl border border-[#e2e8f0] shadow-sm flex flex-col md:flex-row gap-4 items-center">
