@@ -26,6 +26,7 @@ import {
 import type { DateRange } from "react-day-picker";
 import { AppTopBar } from "@/components/AppTopBar";
 import { DateRangePicker } from "@/components/DateRangePicker";
+import { DownloadMenu } from "@/components/DownloadMenu";
 import { getTickets, subscribeTickets, type Ticket } from "@/lib/tickets-store";
 import { exportTicketsPDF, exportDashboardXLSX } from "@/lib/report-exports";
 import { useAuth } from "@/lib/auth";
@@ -215,22 +216,11 @@ function DashboardReportes() {
               <p className="text-label-sm text-[#575f67]">Seleccione el período y filtros para el análisis de gestión.</p>
             </div>
             <div className="flex gap-3">
-              <button
-                onClick={() => exportTicketsPDF(filtered, "reporte", currentUser.name || "Usuario")}
-                className="flex items-center gap-2 h-10 px-4 rounded-md bg-[#f1f5f9] text-[#0f172a] hover:bg-[#e2e8f0] transition-colors font-body-bold disabled:opacity-50"
-                disabled={!canDownload}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>picture_as_pdf</span>
-                PDF
-              </button>
-              <button
-                onClick={() => exportDashboardXLSX(filtered, "reporte", currentUser.name || "Usuario")}
-                className="flex items-center gap-2 h-10 px-4 rounded-md bg-[#f1f5f9] text-[#0f172a] hover:bg-[#e2e8f0] transition-colors font-body-bold disabled:opacity-50"
-                disabled={!canDownload}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>table_view</span>
-                Excel
-              </button>
+              <DownloadMenu
+                hidden={!canDownload}
+                onPDF={(r) => exportTicketsPDF(tickets, r, currentUser.name || "Usuario")}
+                onExcel={(r) => exportDashboardXLSX(tickets, r, currentUser.name || "Usuario")}
+              />
             </div>
           </div>
 
