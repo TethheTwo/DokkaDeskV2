@@ -491,7 +491,7 @@ function TicketDetailModal({
           {(() => {
             const descNote = ticket.notes.find((n) => n.nota?.startsWith("__DESCRIPCION__:"));
             const desc = descNote ? descNote.nota.replace(/^__DESCRIPCION__:/, "").trim() : "";
-            if (ticket.tipo === "Derivado a Conecta" && desc) {
+            if (desc) {
               return (
                 <div className="rounded-md border-l-4 border-[#005da9] bg-[color-mix(in_oklab,#005da9_6%,transparent)] p-3">
                   <div className="text-[11px] font-semibold uppercase tracking-wide text-[#005da9] mb-1">

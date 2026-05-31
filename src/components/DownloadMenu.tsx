@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { FileDown, FileText, ChevronDown, Table2 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { rangeToday, rangeYesterday, rangeCustom, type DateRange } from "@/lib/report-exports";
+import { DateRangePicker } from "@/components/DateRangePicker";
+import { rangeToday, rangeYesterday, type DateRange } from "@/lib/report-exports";
 
 interface Props {
   onPDF: (range: DateRange) => void;
@@ -9,20 +10,23 @@ interface Props {
   hidden?: boolean;
 }
 
-const today = () => new Date().toISOString().slice(0, 10);
+const defaults = { from: new Date(), to: new Date() };
 
 export function DownloadMenu({ onPDF, onExcel, hidden }: Props) {
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<"today" | "yesterday" | "custom">("today");
-  const [from, setFrom] = useState(today());
-  const [to, setTo] = useState(today());
+  const [customRange, setCustomRange] = useState<{ from: Date; to: Date }>(defaults);
 
   if (hidden) return null;
 
   const resolve = (): DateRange => {
     if (mode === "today") return rangeToday();
     if (mode === "yesterday") return rangeYesterday();
-    return rangeCustom(from, to);
+    const from = new Date(customRange.from.getFullYear(), customRange.from.getMonth(), customRange.from.getDate(), 0, 0, 0, 0);
+    const to = new Date(customRange.to.getFullYear(), customRange.to.getMonth(), customRange.to.getDate(), 23, 59, 59, 999);
+    const fromStr = `${String(from.getDate()).padStart(2, "0")}/${String(from.getMonth() + 1).padStart(2, "0")}/${from.getFullYear()}`;
+    const toStr = `${String(to.getDate()).padStart(2, "0")}/${String(to.getMonth() + 1).padStart(2, "0")}/${to.getFullYear()}`;
+    return { from, to, label: `${fromStr}_a_${toStr}` };
   };
 
   const doExport = (type: "pdf" | "xls") => {
@@ -69,25 +73,9 @@ export function DownloadMenu({ onPDF, onExcel, hidden }: Props) {
           ))}
         </div>
         {mode === "custom" && (
-          <div className="grid grid-cols-2 gap-3 mb-4 p-3 rounded-lg bg-[#f8f9fc] border border-[#e2e8f0]">
-            <div>
-              <label className="block text-label-sm text-[#414752] mb-1">Desde</label>
-              <input
-                type="date"
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
-                className="form-input"
-              />
-            </div>
-            <div>
-              <label className="block text-label-sm text-[#414752] mb-1">Hasta</label>
-              <input
-                type="date"
-                value={to}
-                onChange={(e) => setTo(e.target.value)}
-                className="form-input"
-              />
-            </div>
+          <div className="mb-4 p-3 rounded-lg bg-[#f8f9fc] border border-[#e2e8f0]">
+            <label className="block text-label-sm text-[#414752] mb-1">Rango seleccionado</label>
+            <DateRangePicker value={customRange} onChange={setCustomRange} />
           </div>
         )}
         <div className="flex gap-2 pt-3 border-t border-[#e2e8f0]">

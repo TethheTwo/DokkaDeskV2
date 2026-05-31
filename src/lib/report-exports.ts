@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import type { Ticket } from "@/lib/tickets-store";
+import { formatCode } from "@/lib/utils";
 
 const loadJsPDF = async () => {
   const [{ jsPDF }, autoTableMod] = await Promise.all([import("jspdf"), import("jspdf-autotable")]);
@@ -8,7 +9,7 @@ const loadJsPDF = async () => {
 };
 type JsPDFInstance = InstanceType<Awaited<ReturnType<typeof loadJsPDF>>["jsPDF"]>;
 
-const BRAND: [number, number, number] = [47, 127, 214];
+const BRAND: [number, number, number] = [0, 93, 169];
 
 export interface DateRange {
   from: Date;
@@ -52,8 +53,8 @@ function fileSuffix(range: DateRange): string {
 /* -------------------- Estilos compartidos -------------------- */
 
 const STYLES = {
-  brand: "2F7FD6",
-  brand_dark: "1F5A99",
+  brand: "005DA9",
+  brand_dark: "004A8A",
   white: "FFFFFF",
   text: "1E293B",
   text_muted: "64748B",
@@ -170,7 +171,7 @@ function ticketRows(tickets: Ticket[]): (string | number | null)[][] {
         ? t.notes.filter((n) => n.estado === "Cerrado").slice(-1)[0]?.fecha
         : null;
     return [
-      t.nro,
+      formatCode("TK", t.nro),
       format(new Date(t.fechaCreacion), "dd/MM/yyyy HH:mm"),
       t.solicitante,
       t.contratante ?? "",
@@ -634,37 +635,67 @@ export async function exportAuditXLSX(rows: AuditRow[], range: DateRange) {
 
 function pdfHeader(doc: JsPDFInstance, title: string, range: DateRange, user: string) {
   const pageW = doc.internal.pageSize.getWidth();
-  doc.setFillColor(...BRAND);
-  doc.rect(0, 0, pageW, 56, "F");
-  doc.setTextColor(255, 255, 255);
+
+  // White header bar with bottom border (like AppTopBar)
+  doc.setFillColor(255, 255, 255);
+  doc.rect(0, 0, pageW, 60, "F");
+
+  // Brand name left
+  doc.setTextColor(...BRAND);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(16);
-  doc.text("DOKKA Desk", 40, 26);
-  doc.setFontSize(11);
+  doc.setFontSize(14);
+  doc.text("DOKKA Desk", 30, 20);
+
+  // Report title right
   doc.setFont("helvetica", "normal");
-  doc.text(title, 40, 44);
-  doc.setFontSize(9);
+  doc.setFontSize(11);
+  doc.setTextColor(25, 28, 30);
+  doc.text(title, pageW - 30, 20, { align: "right" });
+
+  // Bottom border line
+  doc.setDrawColor(226, 232, 240);
+  doc.setLineWidth(1);
+  doc.line(30, 32, pageW - 30, 32);
+
+  // Metadata row below border
+  doc.setFontSize(7.5);
+  doc.setTextColor(65, 71, 82);
   doc.text(
-    `Rango: ${format(range.from, "dd/MM/yyyy")} — ${format(range.to, "dd/MM/yyyy")}    Generado: ${format(new Date(), "dd/MM/yyyy HH:mm")}    Usuario: ${user}`,
-    pageW - 40,
-    44,
+    `Rango: ${format(range.from, "dd/MM/yyyy")} — ${format(range.to, "dd/MM/yyyy")}`,
+    30,
+    46,
+  );
+  doc.text(
+    `Generado: ${format(new Date(), "dd/MM/yyyy HH:mm")}    Usuario: ${user}`,
+    pageW - 30,
+    46,
     { align: "right" },
   );
-  doc.setTextColor(40, 40, 40);
+
+  // Summary line with count placeholder — caller will set it
+  doc.setTextColor(87, 95, 103);
 }
 
-function pdfFooter(doc: JsPDFInstance) {
+function pdfFooter(doc: JsPDFInstance, user: string) {
   const pageCount = doc.getNumberOfPages();
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    doc.setFontSize(8);
+    // Footer line
+    doc.setDrawColor(226, 232, 240);
+    doc.setLineWidth(0.5);
+    doc.line(30, pageH - 36, pageW - 30, pageH - 36);
+    doc.setFontSize(7.5);
     doc.setTextColor(140, 140, 140);
+    doc.text("DOKKA Desk", 30, pageH - 24);
     doc.text(
-      `DOKKA Desk — Página ${i} de ${pageCount}`,
-      doc.internal.pageSize.getWidth() / 2,
-      doc.internal.pageSize.getHeight() - 18,
+      `Página ${i} de ${pageCount}`,
+      pageW / 2,
+      pageH - 24,
       { align: "center" },
     );
+    doc.text(user ? `Generado por ${user}` : "", pageW - 30, pageH - 24, { align: "right" });
   }
 }
 
@@ -688,7 +719,7 @@ export async function exportTicketsPDF(tickets: Ticket[], range: DateRange, user
       ],
     ],
     body: filtered.map((t) => [
-      t.nro,
+      formatCode("TK", t.nro),
       format(new Date(t.fechaCreacion), "dd/MM/yyyy HH:mm"),
       t.solicitante,
       t.tipo,
@@ -697,12 +728,16 @@ export async function exportTicketsPDF(tickets: Ticket[], range: DateRange, user
       t.registradoPor,
       t.cerradoPor ?? "",
     ]),
-    theme: "striped",
-    headStyles: { fillColor: BRAND, textColor: 255, fontSize: 9 },
-    bodyStyles: { fontSize: 8 },
+    theme: "grid",
+    headStyles: { fillColor: [242, 243, 246], textColor: [65, 71, 82], fontStyle: "bold", fontSize: 8, halign: "left" },
+    bodyStyles: { fontSize: 7.5, textColor: [25, 28, 30] },
+    alternateRowStyles: { fillColor: [248, 250, 252] },
+    tableLineColor: [226, 232, 240],
+    tableLineWidth: 0.5,
+    styles: { cellPadding: 3, lineColor: [226, 232, 240], lineWidth: 0.25 },
     margin: { left: 30, right: 30 },
   });
-  pdfFooter(doc);
+  pdfFooter(doc, user);
   doc.save(`tickets_${fileSuffix(range)}.pdf`);
 }
 
@@ -735,12 +770,16 @@ export async function exportAPPDF(rows: ReportAPRow[], range: DateRange, user: s
       r.ejecutivo_nombre ?? "",
       r.colaborador ?? "",
     ]),
-    theme: "striped",
-    headStyles: { fillColor: BRAND, textColor: 255, fontSize: 9 },
-    bodyStyles: { fontSize: 8 },
+    theme: "grid",
+    headStyles: { fillColor: [242, 243, 246], textColor: [65, 71, 82], fontStyle: "bold", fontSize: 8, halign: "left" },
+    bodyStyles: { fontSize: 7.5, textColor: [25, 28, 30] },
+    alternateRowStyles: { fillColor: [248, 250, 252] },
+    tableLineColor: [226, 232, 240],
+    tableLineWidth: 0.5,
+    styles: { cellPadding: 3, lineColor: [226, 232, 240], lineWidth: 0.25 },
     margin: { left: 30, right: 30 },
   });
-  pdfFooter(doc);
+  pdfFooter(doc, user);
   doc.save(`accidentes_personales_${fileSuffix(range)}.pdf`);
 }
 
@@ -763,11 +802,15 @@ export async function exportCGPDF(rows: ReportCGRow[], range: DateRange, user: s
       r.ejecutivo_nombre ?? "",
       r.colaborador ?? "",
     ]),
-    theme: "striped",
-    headStyles: { fillColor: BRAND, textColor: 255, fontSize: 9 },
-    bodyStyles: { fontSize: 8 },
+    theme: "grid",
+    headStyles: { fillColor: [242, 243, 246], textColor: [65, 71, 82], fontStyle: "bold", fontSize: 8, halign: "left" },
+    bodyStyles: { fontSize: 7.5, textColor: [25, 28, 30] },
+    alternateRowStyles: { fillColor: [248, 250, 252] },
+    tableLineColor: [226, 232, 240],
+    tableLineWidth: 0.5,
+    styles: { cellPadding: 3, lineColor: [226, 232, 240], lineWidth: 0.25 },
     margin: { left: 30, right: 30 },
   });
-  pdfFooter(doc);
+  pdfFooter(doc, user);
   doc.save(`casos_generales_${fileSuffix(range)}.pdf`);
 }

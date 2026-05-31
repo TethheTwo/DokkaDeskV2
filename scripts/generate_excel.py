@@ -15,7 +15,7 @@ from openpyxl.chart.label import DataLabelList
 
 
 CHART_COLORS = [
-    "2F7FD6",  # brand blue
+    "005DA9",  # brand blue
     "16A34A",  # green
     "D97706",  # amber
     "DC2626",  # red
@@ -35,7 +35,7 @@ def hex_to_rgb(hex_color: str) -> str:
     h = hex_color.lstrip("#")
     if len(h) == 6:
         return h
-    return "2F7FD6"
+    return "005DA9"
 
 
 def make_fill(hex_color: str) -> PatternFill:
@@ -50,10 +50,10 @@ def make_font(bold=False, size=10, color=None, italic=False) -> Font:
 
 
 THIN_BORDER = Border(
-    left=Side(style="thin", color="CBD5E1"),
-    right=Side(style="thin", color="CBD5E1"),
-    top=Side(style="thin", color="CBD5E1"),
-    bottom=Side(style="thin", color="CBD5E1"),
+    left=Side(style="thin", color="E2E8F0"),
+    right=Side(style="thin", color="E2E8F0"),
+    top=Side(style="thin", color="E2E8F0"),
+    bottom=Side(style="thin", color="E2E8F0"),
 )
 
 
@@ -223,8 +223,8 @@ def build_sheet(ws, sheet_def: dict, styles: dict):
         for i, h in enumerate(headers):
             cell = ws.cell(row=current_row, column=i + 1)
             apply_cell(cell, h,
-                       font_kwargs={"bold": True, "size": 10, "color": styles["white"]},
-                       fill_color=styles["brand"],
+                       font_kwargs={"bold": True, "size": 10, "color": styles["text"]},
+                       fill_color=styles.get("bg_gray", "F1F5F9"),
                        alignment={"horizontal": "center", "vertical": "center", "wrapText": True})
         current_row += 1
 

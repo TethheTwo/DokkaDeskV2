@@ -2,6 +2,7 @@ import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import { format } from "date-fns";
 import type { Ticket, TicketAttachment } from "@/lib/tickets-store";
+import { formatCode } from "@/lib/utils";
 
 const SUPABASE_URL = typeof window !== "undefined"
   ? window.location.origin
@@ -15,8 +16,6 @@ function blobToBase64(blob: Blob): Promise<string> {
     reader.readAsDataURL(blob);
   });
 }
-
-const BRAND = "#005da9";
 
 export function downloadTicketsCSV(tickets: Ticket[], filename = "tickets.csv") {
   const headers = [
@@ -66,78 +65,90 @@ export function downloadTicketsCSV(tickets: Ticket[], filename = "tickets.csv") 
 export async function downloadTicketPDF(ticket: Ticket) {
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const pageW = doc.internal.pageSize.getWidth();
+  const tc = formatCode("TK", ticket.nro);
 
-  // Header
-  doc.setFillColor(BRAND);
+  // Header — white bar with bottom border (like AppTopBar)
+  doc.setFillColor(255, 255, 255);
   doc.rect(0, 0, pageW, 60, "F");
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(18);
+  doc.setTextColor(0, 93, 169);
   doc.setFont("helvetica", "bold");
-  doc.text("DOKKA Desk", 40, 28);
-  doc.setFontSize(11);
+  doc.setFontSize(14);
+  doc.text("DOKKA Desk", 40, 22);
   doc.setFont("helvetica", "normal");
-  doc.text(`Reporte de ticket #${ticket.nro}`, 40, 46);
+  doc.setFontSize(11);
+  doc.setTextColor(25, 28, 30);
+  doc.text(`Reporte de ${tc}`, pageW - 40, 22, { align: "right" });
+  doc.setDrawColor(226, 232, 240);
+  doc.setLineWidth(1);
+  doc.line(40, 34, pageW - 40, 34);
+  doc.setFontSize(7.5);
+  doc.setTextColor(65, 71, 82);
+  doc.text(`Generado: ${format(new Date(), "dd/MM/yyyy HH:mm")}`, pageW - 40, 48, { align: "right" });
 
-  doc.setTextColor(40, 40, 40);
-  doc.setFontSize(10);
-  doc.text(`Generado: ${format(new Date(), "dd/MM/yyyy HH:mm")}`, pageW - 40, 46, {
-    align: "right",
-  });
-
-  let y = 90;
-  doc.setFontSize(13);
-  doc.setFont("helvetica", "bold");
-  doc.text("Datos del ticket", 40, y);
-  y += 6;
-
+  // Info table
   const descNote = ticket.notes.find((n) => n.nota?.startsWith("__DESCRIPCION__:"));
   const descripcion = descNote ? descNote.nota.replace(/^__DESCRIPCION__:\s*/, "").trim() : "";
 
   const info: [string, string][] = [
-    ["Nro.", String(ticket.nro)],
-    ["Fecha de registro", format(new Date(ticket.fechaCreacion), "dd/MM/yyyy HH:mm")],
-    ["Tipo", ticket.tipo],
+    [tc, "Nro. Ticket"],
+    [format(new Date(ticket.fechaCreacion), "dd/MM/yyyy HH:mm"), "Fecha de registro"],
+    [ticket.tipo, "Tipo"],
     ...(ticket.tipoAsistencia
-      ? [["Tipo de asistencia", ticket.tipoAsistencia] as [string, string]]
+      ? [[ticket.tipoAsistencia, "Tipo de asistencia"] as [string, string]]
       : []),
-    ["Solicitante", ticket.solicitante],
-    ...(ticket.contratante ? [["Contratante", ticket.contratante] as [string, string]] : []),
-    ...(ticket.departamento ? [["Departamento", ticket.departamento] as [string, string]] : []),
-    ...(ticket.celular ? [["Celular", ticket.celular] as [string, string]] : []),
-    ...(ticket.poliza ? [["Póliza", ticket.poliza] as [string, string]] : []),
-    ["Severidad", ticket.severidad],
-    ["Estado actual", ticket.estado],
-    ["Registrado por", ticket.registradoPor],
-    ["Cerrado por", ticket.cerradoPor],
-    ...(descripcion ? [["Descripción", descripcion] as [string, string]] : []),
-  ];
+    [ticket.solicitante, "Solicitante"],
+    ...(ticket.contratante ? [[ticket.contratante, "Contratante"] as [string, string]] : []),
+    ...(ticket.departamento ? [[ticket.departamento, "Departamento"] as [string, string]] : []),
+    ...(ticket.celular ? [[ticket.celular, "Celular"] as [string, string]] : []),
+    ...(ticket.poliza ? [[ticket.poliza, "Póliza"] as [string, string]] : []),
+    [ticket.severidad, "Severidad"],
+    [ticket.estado, "Estado actual"],
+    [ticket.registradoPor, "Registrado por"],
+    [ticket.cerradoPor || "—", "Cerrado por"],
+    ...(descripcion ? [[descripcion, "Descripción"] as [string, string]] : []),
+  ].map(([v, l]) => [l, v] as [string, string]);
 
   autoTable(doc, {
-    startY: y + 4,
+    startY: 80,
     head: [["Campo", "Valor"]],
     body: info,
     theme: "grid",
-    headStyles: { fillColor: [47, 127, 214], textColor: 255, fontSize: 10 },
-    bodyStyles: { fontSize: 9 },
-    columnStyles: { 0: { cellWidth: 140, fontStyle: "bold" } },
+    headStyles: { fillColor: [242, 243, 246], textColor: [65, 71, 82], fontStyle: "bold", fontSize: 9, halign: "left" },
+    bodyStyles: { fontSize: 8.5, textColor: [25, 28, 30] },
+    alternateRowStyles: { fillColor: [248, 250, 252] },
+    tableLineColor: [226, 232, 240],
+    tableLineWidth: 0.5,
+    styles: { cellPadding: 3, lineColor: [226, 232, 240], lineWidth: 0.25 },
+    columnStyles: { 0: { cellWidth: 130, fontStyle: "bold" } },
     margin: { left: 40, right: 40 },
+    rowPageBreak: "avoid",
   });
 
-  let nextY = (doc as any).lastAutoTable.finalY + 24;
+  let nextY = (doc as any).lastAutoTable.finalY + 20;
+
+  const ensureSpace = (needed: number) => {
+    const ph = doc.internal.pageSize.getHeight();
+    if (nextY + needed > ph - 40) {
+      doc.addPage();
+      nextY = 40;
+    }
+  };
+
   const displayNotes = ticket.notes.filter((n) => !n.nota?.startsWith("__DESCRIPCION__:"));
 
-  // Notas
-  doc.setFontSize(13);
+  // Notes section title
+  ensureSpace(55);
+  doc.setFontSize(11);
   doc.setFont("helvetica", "bold");
-  doc.setTextColor(40, 40, 40);
+  doc.setTextColor(25, 28, 30);
   doc.text(`Historial de notas (${displayNotes.length})`, 40, nextY);
 
   if (displayNotes.length === 0) {
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.setFont("helvetica", "italic");
-    doc.setTextColor(120, 120, 120);
-    doc.text("Sin notas registradas.", 40, nextY + 16);
-    nextY += 30;
+    doc.setTextColor(100, 116, 139);
+    doc.text("Sin notas registradas.", 40, nextY + 14);
+    nextY += 28;
   } else {
     autoTable(doc, {
       startY: nextY + 6,
@@ -151,20 +162,25 @@ export async function downloadTicketPDF(ticket: Ticket) {
             ? `\n[Adjuntos: ${n.attachments.map((a) => a.name).join(", ")}]`
             : ""),
       ]),
-      theme: "striped",
-      headStyles: { fillColor: [47, 127, 214], textColor: 255, fontSize: 10 },
-      bodyStyles: { fontSize: 9, cellPadding: 5 },
+      theme: "grid",
+      headStyles: { fillColor: [242, 243, 246], textColor: [65, 71, 82], fontStyle: "bold", fontSize: 8.5, halign: "left" },
+      bodyStyles: { fontSize: 8, textColor: [25, 28, 30] },
+      alternateRowStyles: { fillColor: [248, 250, 252] },
+      tableLineColor: [226, 232, 240],
+      tableLineWidth: 0.5,
+      styles: { cellPadding: 3, lineColor: [226, 232, 240], lineWidth: 0.25 },
       columnStyles: {
         0: { cellWidth: 90 },
         1: { cellWidth: 80 },
         2: { cellWidth: 100 },
       },
       margin: { left: 40, right: 40 },
+      rowPageBreak: "avoid",
     });
-    nextY = (doc as any).lastAutoTable.finalY + 24;
+    nextY = (doc as any).lastAutoTable.finalY + 20;
   }
 
-  // Adjuntos con imágenes embebidas en tabla
+  // Adjuntos con imágenes embebidas
   const allAttachments: (TicketAttachment & { noteRef: string })[] = [
     ...ticket.attachments.map((a) => ({ ...a, noteRef: "Ticket" })),
     ...ticket.notes.flatMap((n) =>
@@ -175,7 +191,6 @@ export async function downloadTicketPDF(ticket: Ticket) {
     ),
   ];
 
-  // Fetch images antes de construir la tabla
   const imageCache = new Map<string, { b64: string; w: number; h: number }>();
   await Promise.all(
     allAttachments
@@ -225,9 +240,10 @@ export async function downloadTicketPDF(ticket: Ticket) {
   };
 
   if (allAttachments.length > 0) {
-    doc.setFontSize(13);
+    ensureSpace(55);
+    doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(40, 40, 40);
+    doc.setTextColor(25, 28, 30);
     doc.text(`Adjuntos (${allAttachments.length})`, 40, nextY);
 
     autoTable(doc, {
@@ -235,13 +251,17 @@ export async function downloadTicketPDF(ticket: Ticket) {
       head: [["Nota", "Archivo", "Vista previa"]],
       body: allAttachments.map((a) => buildRow(a)),
       theme: "grid",
-      headStyles: { fillColor: [47, 127, 214], textColor: 255, fontSize: 10 },
-      bodyStyles: { fontSize: 9 },
+      headStyles: { fillColor: [242, 243, 246], textColor: [65, 71, 82], fontStyle: "bold", fontSize: 8.5, halign: "left" },
+      bodyStyles: { fontSize: 8, textColor: [25, 28, 30] },
+      tableLineColor: [226, 232, 240],
+      tableLineWidth: 0.5,
+      styles: { cellPadding: 3, lineColor: [226, 232, 240], lineWidth: 0.25 },
       columnStyles: {
         0: { cellWidth: 100 },
         1: { cellWidth: 120 },
       },
       margin: { left: 40, right: 40 },
+      rowPageBreak: "avoid",
       didDrawCell: (data: any) => {
         if (data.column.index === 2 && data.cell.section === "body") {
           const attach = allAttachments[data.row.index];
@@ -263,21 +283,26 @@ export async function downloadTicketPDF(ticket: Ticket) {
         }
       },
     });
-    nextY = (doc as any).lastAutoTable.finalY + 24;
   }
 
-  // Pie de página
+  // Footer
   const pageCount = doc.getNumberOfPages();
+  const pageH = doc.internal.pageSize.getHeight();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    doc.setFontSize(8);
+    doc.setDrawColor(226, 232, 240);
+    doc.setLineWidth(0.5);
+    doc.line(40, pageH - 36, pageW - 40, pageH - 36);
+    doc.setFontSize(7.5);
     doc.setTextColor(140, 140, 140);
+    doc.text("DOKKA Desk", 40, pageH - 24);
     doc.text(
-      `DOKKA Desk — Ticket #${ticket.nro} — Página ${i} de ${pageCount}`,
+      `Página ${i} de ${pageCount}`,
       pageW / 2,
-      doc.internal.pageSize.getHeight() - 20,
+      pageH - 24,
       { align: "center" },
     );
+    doc.text(tc, pageW - 40, pageH - 24, { align: "right" });
   }
 
   doc.save(`ticket-${ticket.nro}.pdf`);
